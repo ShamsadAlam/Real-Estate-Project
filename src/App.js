@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from "react-router-dom";
+import { Container } from "@chakra-ui/react";
 
-function App() {
+import Header from "./components/Header/Header";
+import Home from "./routes/Home";
+import PropertyDetails from "./routes/PropertyDetails";
+import Footer from "./components/Footer";
+import HouseProvider from "./context/HouseContext";
+import HouseDetails from "./components/PropertyDetails/HouseDetails";
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <HouseProvider>
+      <Container maxW="container.lg" px="6">
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="property-details" element={<PropertyDetails />}>
+            <Route path=":propertyId" element={<HouseDetails />} />
+          </Route>
+          <Route
+            path="*"
+            element={
+              <main style={{ padding: "1rem" }}>
+                <p>There's nothing here!</p>
+              </main>
+            }
+          />
+        </Routes>
+      </Container>
+      <Footer />
+    </HouseProvider>
   );
-}
+};
 
 export default App;

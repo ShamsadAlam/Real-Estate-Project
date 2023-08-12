@@ -19,11 +19,10 @@ const PriceFilter = () => {
   };
 
   return (
-    <Select placeholder="select price" onChange={priceHandler}>
-      {prices.map((price, index) =>
-          <option key={index}>{price.value}</option>
-        )
-      }
+    <Select iconSize="0px" placeholder="select price" onChange={priceHandler}>
+      {prices.map((price, index) => (
+        <option key={index}>{price.value}</option>
+      ))}
     </Select>
   );
 };

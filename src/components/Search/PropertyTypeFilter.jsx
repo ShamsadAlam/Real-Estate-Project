@@ -1,22 +1,23 @@
-import { Select } from '@chakra-ui/react'
-import { useContext } from 'react';
-import { HouseContext } from '../../context/HouseContext';
+import { Select } from "@chakra-ui/react";
+import { useContext } from "react";
+import { HouseContext } from "../../context/HouseContext";
 
 const PropertyTypeFilter = () => {
+  const { setProperty, properties } = useContext(HouseContext);
 
-  const {setProperty, properties} = useContext(HouseContext);
-
-  const propertyTypeHandler = (event)=> {
+  const propertyTypeHandler = (event) => {
     setProperty(event.target.value);
-  }
+  };
 
   return (
-    <Select placeholder='select type' onChange={propertyTypeHandler}>
-      {
-        properties.map((type, index)=> 
-          <option key={index}>{type}</option>
-        )
-      }
+    <Select
+      iconSize="0px"
+      placeholder="select type"
+      onChange={propertyTypeHandler}
+    >
+      {properties.map((type, index) => (
+        <option key={index}>{type}</option>
+      ))}
     </Select>
   );
 };

@@ -1,111 +1,267 @@
-import { createContext, useState, useEffect } from 'react';
-import { housesData } from '../data';
+import { createContext, useState, useEffect } from "react";
+import { housesData } from "../data";
 
-export const HouseContext = createContext('');
+export const HouseContext = createContext("");
 
-const HouseProvider = ({children}) =>{
+const HouseProvider = ({ children }) => {
+  const [houses, setHouses] = useState(housesData);
+  const [country, setCountry] = useState("Select Country");
+  const [countries, setCountries] = useState([]);
+  const [price, setPrice] = useState("Select Price");
+  const [property, setProperty] = useState("Select type");
+  const [properties, setProperties] = useState([]);
+  const [moveInDate, setMoveInDate] = useState("Select Date");
+  const [isLoading, setIsLoading] = useState(false);
 
-    const [houses, setHouses] = useState(housesData);
-    const [country, setCountry] = useState('Select Country');
-    const [countries, setCountries] = useState([]);
-    const [price, setPrice] = useState('Select Price');
-    const [property, setProperty] = useState('Select type');
-    const [properties, setProperties] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    
-    useEffect(() => {
-        const allCountries = houses.map(house=>{
-            return house.country;
-        })
-        const uniqueCountries = [...new Set(allCountries)];
-        setCountries(uniqueCountries);
-    }, []);
+  useEffect(() => {
+    const allCountries = houses.map((house) => {
+      return house.country;
+    });
+    const uniqueCountries = [...new Set(allCountries)];
+    setCountries(uniqueCountries);
+  });
 
-    useEffect(() => {
-        const allPropertyTypes = houses.map(house=>{
-            return house.type;
-        })
-        const uniquePropertyTypes = [...new Set(allPropertyTypes)];
-        setProperties(uniquePropertyTypes);
-    }, []);
+  useEffect(() => {
+    const allPropertyTypes = houses.map((house) => {
+      return house.type;
+    });
+    const uniquePropertyTypes = [...new Set(allPropertyTypes)];
+    setProperties(uniquePropertyTypes);
+  });
 
-    const searchHandler=()=>{
-        setIsLoading(true);
-       
-        // checking selection 
-        const isDefault = (str)=> {
-            return str.split(' ').includes('Select');
-        }
-        const minPrice = parseInt(price.split(' ')[0]);
-        const maxPrice = parseInt(price.split('- ')[1]);
+  const searchHandler = () => {
+    setIsLoading(true);
 
-        const filteredHouses = housesData.filter(house=> {
-            const housePrice = parseInt(house.price);
-            // no selection 
-            if(isDefault(country) && isDefault(price) && isDefault(property) ){
-                return house;
-            }
+    // checking selection
+    const isDefault = (str) => {
+      return str.split(" ").includes("Select");
+    };
+    const minPrice = parseInt(price.split(" ")[0]);
+    const maxPrice = parseInt(price.split("- ")[1]);
 
-            // country is selected
-            if(!isDefault(country) && isDefault(price) && isDefault(property)){
-                return house.country === country;
-            }
-            
-            // price is selected
-            if(isDefault(country) && !isDefault(price) && isDefault(property)){
-                return (housePrice >= minPrice) && (housePrice <= maxPrice);
-            }
-            
-            // property is selected
-            if(isDefault(country) && isDefault(price) && !isDefault(property)){
-                return house.type === property;
-            }
-            
-            // country & price is selected
-            if(!isDefault(country) && !isDefault(price) && isDefault(property)){
-                return house.country === country && (housePrice >= minPrice) && (housePrice <= maxPrice);
-            }
-            
-            // country & property is selected
-            if(!isDefault(country) && isDefault(price) && !isDefault(property)){
-                return house.country === country && house.type === property;
-            }
-            
-            // price & property is selected
-            if(isDefault(country) && !isDefault(price) && !isDefault(property)){
-                return (housePrice >= minPrice) && (housePrice <= maxPrice) && house.type === property;
-            }
+    const filteredHouses = housesData.filter((house) => {
+      const housePrice = parseInt(house.price);
+      // no selection
+      if (
+        isDefault(country) &&
+        isDefault(price) &&
+        isDefault(property) &&
+        isDefault(moveInDate)
+      ) {
+        return house;
+      }
 
-            // all are selected 
-            if(house.country === country && housePrice >= minPrice && housePrice <= maxPrice && house.type === property){
-                return house;
-            }
-        })
+      // country is selected
+      if (
+        !isDefault(country) &&
+        isDefault(price) &&
+        isDefault(property) &&
+        isDefault(moveInDate)
+      ) {
+        return house.country === country;
+      }
 
-        // setHouses(filteredHouses)
-        setTimeout(() => {
-            filteredHouses.length>0 ? setHouses(filteredHouses) : setHouses([]);
-            setIsLoading(false);
-        }, 1000);
-    }
-    
-    return(
-        <HouseContext.Provider value={{
-            houses,
-            country,
-            setCountry,
-            countries,
-            price,
-            setPrice,
-            property,
-            setProperty,
-            properties,
-            searchHandler,
-            isLoading
-        }}>
-            {children}
-        </HouseContext.Provider>
-    )
-}
+      // price is selected
+      if (
+        isDefault(country) &&
+        !isDefault(price) &&
+        isDefault(property) &&
+        isDefault(moveInDate)
+      ) {
+        return housePrice >= minPrice && housePrice <= maxPrice;
+      }
+
+      // property is selected
+      if (
+        isDefault(country) &&
+        isDefault(price) &&
+        !isDefault(property) &&
+        isDefault(moveInDate)
+      ) {
+        return house.type === property;
+      }
+
+      // moveInDate is selected
+      if (
+        isDefault(country) &&
+        isDefault(price) &&
+        isDefault(property) &&
+        !isDefault(moveInDate)
+      ) {
+        return house.moveInDate === moveInDate;
+      }
+
+      // country and date is selected
+      if (
+        !isDefault(country) &&
+        !isDefault(moveInDate) &&
+        isDefault(property) &&
+        isDefault(price)
+      ) {
+        return house.country === country && house.moveInDate === moveInDate;
+      }
+
+      // country & property is selected
+      if (
+        !isDefault(country) &&
+        isDefault(price) &&
+        !isDefault(property) &&
+        isDefault(moveInDate)
+      ) {
+        return house.country === country && house.type === property;
+      }
+
+      // country & price is selected
+      if (
+        !isDefault(country) &&
+        !isDefault(price) &&
+        isDefault(property) &&
+        isDefault(moveInDate)
+      ) {
+        return (
+          house.country === country &&
+          housePrice >= minPrice &&
+          housePrice <= maxPrice
+        );
+      }
+
+      // date & property is selected
+      if (
+        isDefault(country) &&
+        isDefault(price) &&
+        !isDefault(property) &&
+        !isDefault(moveInDate)
+      ) {
+        return house.moveInDate === moveInDate && house.type === property;
+      }
+
+      // date & price is selected
+      if (
+        isDefault(country) &&
+        !isDefault(price) &&
+        isDefault(property) &&
+        !isDefault(moveInDate)
+      ) {
+        return (
+          house.moveInDate === moveInDate &&
+          housePrice >= minPrice &&
+          housePrice <= maxPrice
+        );
+      }
+
+      // property & price is selected
+      if (
+        isDefault(country) &&
+        !isDefault(price) &&
+        !isDefault(property) &&
+        isDefault(moveInDate)
+      ) {
+        return (
+          house.type === property &&
+          housePrice >= minPrice &&
+          housePrice <= maxPrice
+        );
+      }
+
+      // country, date & property is selected
+      if (
+        !isDefault(country) &&
+        isDefault(price) &&
+        !isDefault(property) &&
+        !isDefault(moveInDate)
+      ) {
+        return (
+          house.country === country &&
+          house.moveInDate === moveInDate &&
+          house.type === property
+        );
+      }
+
+      // country, date & price is selected
+      if (
+        !isDefault(country) &&
+        !isDefault(price) &&
+        isDefault(property) &&
+        !isDefault(moveInDate)
+      ) {
+        return (
+          house.country === country &&
+          house.moveInDate === moveInDate &&
+          housePrice >= minPrice &&
+          housePrice <= maxPrice
+        );
+      }
+
+      // country, property & price is selected
+      if (
+        !isDefault(country) &&
+        !isDefault(price) &&
+        isDefault(property) &&
+        !isDefault(moveInDate)
+      ) {
+        return (
+          house.country === country &&
+          house.type === property &&
+          housePrice >= minPrice &&
+          housePrice <= maxPrice
+        );
+      }
+
+      // date, property & price is selected
+      if (
+        isDefault(country) &&
+        !isDefault(price) &&
+        !isDefault(property) &&
+        !isDefault(moveInDate)
+      ) {
+        return (
+          house.moveInDate === moveInDate &&
+          house.type === property &&
+          housePrice >= minPrice &&
+          housePrice <= maxPrice
+        );
+      }
+
+      // all are selected
+      if (
+        house.country === country &&
+        housePrice >= minPrice &&
+        housePrice <= maxPrice &&
+        house.type === property &&
+        house.moveInDate === moveInDate
+      ) {
+        return house;
+      }
+    });
+
+    // setHouses(filteredHouses)
+    setTimeout(() => {
+      filteredHouses.length > 0 ? setHouses(filteredHouses) : setHouses([]);
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  return (
+    <HouseContext.Provider
+      value={{
+        houses,
+        country,
+        setCountry,
+        countries,
+        price,
+        setPrice,
+        property,
+        setProperty,
+        properties,
+        moveInDate,
+        setMoveInDate,
+        searchHandler,
+        isLoading,
+      }}
+    >
+      {children}
+    </HouseContext.Provider>
+  );
+};
 
 export default HouseProvider;
